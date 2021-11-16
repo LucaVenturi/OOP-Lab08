@@ -5,7 +5,11 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Random;
 
@@ -71,7 +75,15 @@ public class BadIOGUI {
         read.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                System.out.println("Pressed " + e.getActionCommand());
+                try (
+                        InputStream file = new FileInputStream(PATH);
+                        DataInputStream in = new DataInputStream(file);
+                ) {
+                    System.out.println(in.readInt());
+                } catch (IOException e1) {
+                    JOptionPane.showMessageDialog(frame, e1, "Error", JOptionPane.ERROR_MESSAGE);
+                    e1.printStackTrace();
+                }
             }
         });
     }
