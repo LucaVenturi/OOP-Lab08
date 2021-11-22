@@ -1,17 +1,29 @@
 package it.unibo.oop.lab.mvcio;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.Random;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+
+import it.unibo.oop.lab.iogui.BadIOGUI;
 
 /**
  * A very simple program using a graphical interface.
  * 
  */
 public final class SimpleGUI {
-
-    private final JFrame frame = new JFrame();
+    private static final String TITLE = "A very simple GUI application";
+    private static final int PROPORTION = 5;
+    private final JFrame frame = new JFrame(TITLE);
 
     /*
      * Once the Controller is done, implement this class in such a way that:
@@ -36,7 +48,25 @@ public final class SimpleGUI {
     /**
      * builds a new {@link SimpleGUI}.
      */
-    public SimpleGUI() {
+    public SimpleGUI(final Controller ctrl) {
+        final JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        final JTextArea textArea = new JTextArea();
+        final JButton save = new JButton("Save");
+        panel.add(textArea, BorderLayout.CENTER);
+        panel.add(save, BorderLayout.SOUTH);
+        frame.setContentPane(panel);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        save.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent event) {
+                try {
+                    ctrl.writeOnFile(textArea.getText());
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(null, e.getMessage(), "An error occurred", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
         /*
          * Make the frame half the resolution of the screen. This very method is
          * enough for a single screen setup. In case of multiple monitors, the
@@ -50,17 +80,17 @@ public final class SimpleGUI {
         final Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         final int sw = (int) screen.getWidth();
         final int sh = (int) screen.getHeight();
-        frame.setSize(sw / 2, sh / 2);
+        frame.setSize(sw / PROPORTION, sh / PROPORTION);
         /*
          * Instead of appearing at (0,0), upper left corner of the screen, this
          * flag makes the OS window manager take care of the default positioning
          * on screen. Results may vary, but it is generally the best choice.
          */
         frame.setLocationByPlatform(true);
-        //frame.setVisible(true);
+        frame.setVisible(true);
     }
 
     public static void main(final String... args) {
-        new SimpleGUI();
+        new SimpleGUI(new Controller());
     }
 }
